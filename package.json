@@ -1,0 +1,19 @@
+{
+  "name": "com.nanodnastudios.dnaneuralnetworks",
+  "version": "1.0.0",
+  "description": "This package is used for Creating and Training Neural Networks in Unity",
+  "license": "APACHE",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/Nano-DNA-Studios/DNA-Neural-Networks.git"
+  },
+  "author": "MrDNAlex <mr.dnalex.2003@gmail.com> (https://github.com/MrDNAlex)",
+  "keywords": [
+  "Neural Networks",
+  "AI",
+  "Math"
+  ],
+  "displayName": "DNA Neural Networks",
+  "unity": "2021.3",
+  "type": "tool"
+}
