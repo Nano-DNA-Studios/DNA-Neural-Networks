@@ -1,6 +1,4 @@
-using System.Collections;
-using System.Collections.Generic;
-using UnityEngine;
+using MachineLearning.Activations;
 
 namespace MachineLearning
 {
@@ -9,8 +7,8 @@ namespace MachineLearning
 	{
 		public int[] networkSize;
 
-		public Activation.ActivationType activationType;
-		public Activation.ActivationType outputActivationType;
+		public ActivationType activationType;
+		public ActivationType outputActivationType;
 		public Cost.CostType costType;
 
 		public double initialLearningRate;
@@ -21,8 +19,8 @@ namespace MachineLearning
 
 		public NeuralNetworkSettings()
 		{
-			activationType = Activation.ActivationType.ReLU;
-			outputActivationType = Activation.ActivationType.Softmax;
+			activationType = ActivationType.ReLU;
+			outputActivationType = ActivationType.Softmax;
 			costType = Cost.CostType.CrossEntropy;
 			initialLearningRate = 0.05;
 			learnRateDecay = 0.075;

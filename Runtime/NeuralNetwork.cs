@@ -1,5 +1,6 @@
 using MachineLearningMath;
 using System;
+using MachineLearning.Activations;
 
 namespace MachineLearning
 {

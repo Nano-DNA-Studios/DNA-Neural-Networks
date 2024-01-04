@@ -1,5 +1,6 @@
 using UnityEngine;
 using System;
+using MachineLearning.Activations;
 
 
 namespace MachineLearning
@@ -24,11 +25,11 @@ namespace MachineLearning
         //public PoolingLayerInfo pooling;
     }
 
-    [System.Serializable]
+    [Serializable]
     public struct NeuralLayerInfo
     {
         public int outputSize;
-        public Activation.ActivationType activationType;
+        public ActivationType activationType;
     }
 }
 

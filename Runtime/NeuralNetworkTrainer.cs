@@ -6,6 +6,7 @@ using System.IO;
 using MachineLearning;
 using System.Linq;
 using MachineLearningMath;
+using MachineLearning.Activations;
 
 public class NeuralNetworkTrainer : MonoBehaviour
 {

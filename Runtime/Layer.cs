@@ -2,6 +2,7 @@ using MachineLearningMath;
 using System;
 using UnityEngine;
 using MachineLearning.Parallelization;
+using MachineLearning.Activations;
 
 namespace MachineLearning
 {
@@ -45,7 +46,7 @@ namespace MachineLearning
         {
             this.NumNodesIn = numNodesIn;
             this.NumNodesOut = numNodesOut;
-            activation = new Activation.Sigmoid();
+            activation = new Sigmoid();
 
             weights = new Matrix(numNodesOut, numNodesIn);
             _costGradientWeight = new Matrix(numNodesOut, numNodesIn);

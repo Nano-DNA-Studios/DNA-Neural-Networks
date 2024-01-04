@@ -1,9 +1,6 @@
-using System.Collections;
-using System.Collections.Generic;
-using UnityEngine;
 using MachineLearningMath;
 
-namespace MachineLearning
+namespace MachineLearning.Activations
 {
     public interface IActivation
     {
@@ -11,7 +8,7 @@ namespace MachineLearning
 
         Matrix Derivative(Matrix matrix);
 
-        Activation.ActivationType GetActivationType();
+        ActivationType GetActivationType();
 
         int GetActivationFunctionIndex();
     }
