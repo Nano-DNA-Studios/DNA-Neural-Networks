@@ -1,12 +1,11 @@
 using MachineLearningMath;
 using System;
-using System.IO;
 using UnityEngine;
 
 namespace DNANeuralNetwork
 {
-    [System.Serializable]
-    public class DNALayer
+    [Serializable]
+    public class Layer
     {
         [SerializeField]
         private int _numNodeIn;
@@ -17,7 +16,7 @@ namespace DNANeuralNetwork
         public int ActivationIndex;
 
         [SerializeField]
-        public IDNAActivation activation;
+        public IActivation activation;
 
         public int NumNodesIn { get { return _numNodeIn; } set { _numNodeIn = value; } }
 
@@ -37,15 +36,15 @@ namespace DNANeuralNetwork
         private Matrix _weightVelocities;
         private Matrix _biasVelocities;
 
-        public DNAGPUParallelization Parallelization { get; set; }
+        public GPUParallelization Parallelization { get; set; }
 
         public int ParallelBatchSize { get; set; } = 32;
 
-        public DNALayer(int numNodesIn, int numNodesOut)
+        public Layer(int numNodesIn, int numNodesOut)
         {
             this.NumNodesIn = numNodesIn;
             this.NumNodesOut = numNodesOut;
-            activation = new DNAActivation.Sigmoid();
+            activation = new Activation.Sigmoid();
 
             weights = new Matrix(numNodesOut, numNodesIn);
             _costGradientWeight = new Matrix(numNodesOut, numNodesIn);
@@ -57,12 +56,12 @@ namespace DNANeuralNetwork
 
             InitializeRandomWeights(new System.Random());
 
-            Parallelization = new DNAGPUParallelization(this);
+            Parallelization = new GPUParallelization(this);
         }
 
         public Matrix CalculateOutputs(Matrix inputs)
         {
-            if (DNAGPUParallelization.LayerOutputGPU != null)
+            if (GPUParallelization.LayerOutputGPU != null)
             {
                 if (SystemInfo.deviceType == DeviceType.Desktop)
                     return Parallelization.LayerOutputCalculationTrainingGPU(inputs).activation;
@@ -74,11 +73,11 @@ namespace DNANeuralNetwork
                 return activation.Activate((weights * inputs) + biases);
         }
 
-        public Matrix CalculateOutputs(Matrix inputs, DNALayerLearnData learnData)
+        public Matrix CalculateOutputs(Matrix inputs, LayerLearnData learnData)
         {
             learnData.inputs = inputs;
 
-            if (DNAGPUParallelization.LayerOutputGPU != null)
+            if (GPUParallelization.LayerOutputGPU != null)
             {
                 (Matrix weightedInputs, Matrix activation) = Parallelization.LayerOutputCalculationTrainingGPU(inputs);
 
@@ -100,7 +99,7 @@ namespace DNANeuralNetwork
             return learnData.activations;
         }
 
-        public double[] ParallelCalculateOutputs(double[] inputs, DNAParallelLayerLearnData learnData) //DNALayerLearnData[] learnData
+        public double[] ParallelCalculateOutputs(double[] inputs, ParallelLayerLearnData learnData) //LayerLearnData[] learnData
         {
             (double[] weightedInputs, double[] activation) = Parallelization.ParallelLayerOutputCalculationTrainingGPU(inputs);
 
@@ -132,7 +131,7 @@ namespace DNANeuralNetwork
             _costGradientBias = new Matrix(_costGradientBias.Height, _costGradientBias.Width);
         }
 
-        public void CalculateOutputLayerNodeValues(DNALayerLearnData layerLearnData, Matrix expectedOutputs, IDNACost cost)
+        public void CalculateOutputLayerNodeValues(LayerLearnData layerLearnData, Matrix expectedOutputs, ICost cost)
         {
             Matrix costDerivative = cost.CostDerivative(layerLearnData.activations, expectedOutputs);
             Matrix activationDerivative = activation.Derivative(layerLearnData.weightedInputs);
@@ -141,12 +140,12 @@ namespace DNANeuralNetwork
                 layerLearnData.nodeValues[i] = costDerivative[i] * activationDerivative[i];
         }
 
-        public void ParallelCalculateOutputLayerNodeValues(DNAParallelLayerLearnData layerLearnData, double[] expectedOutput, IDNACost cost, Matrix expectedOutputDim)
+        public void ParallelCalculateOutputLayerNodeValues(ParallelLayerLearnData layerLearnData, double[] expectedOutput, ICost cost, Matrix expectedOutputDim)
         {
             Parallelization.ParallelCalculateOutputLayerNodeValues(layerLearnData, expectedOutput, cost, expectedOutputDim);
         }
 
-        public void CalculateHiddenLayerNodeValues(DNALayerLearnData layerLearnData, DNALayer oldLayer, Matrix oldNodeValues)
+        public void CalculateHiddenLayerNodeValues(LayerLearnData layerLearnData, Layer oldLayer, Matrix oldNodeValues)
         {
             Matrix newNodeValues = oldLayer.weights.Transpose() * oldNodeValues;
 
@@ -158,12 +157,12 @@ namespace DNANeuralNetwork
             layerLearnData.nodeValues = newNodeValues;
         }
 
-        public void ParallelCalculateHiddenLayerNodeValues(DNAParallelLayerLearnData layerLearnData, DNALayer oldLayer, double[] oldNodeValues)
+        public void ParallelCalculateHiddenLayerNodeValues(ParallelLayerLearnData layerLearnData, Layer oldLayer, double[] oldNodeValues)
         {
             Parallelization.ParallelHiddenLayerNodeCalc(layerLearnData, oldLayer, oldNodeValues);
         }
 
-        public void UpdateGradients(DNALayerLearnData layerLearnData)
+        public void UpdateGradients(LayerLearnData layerLearnData)
         {
             //Lock for Parallel Processing
             lock (_costGradientWeight)
@@ -177,14 +176,14 @@ namespace DNANeuralNetwork
             }
         }
 
-        public void ParallelUpdateGradients(DNAParallelLayerLearnData layerLearnData)
+        public void ParallelUpdateGradients(ParallelLayerLearnData layerLearnData)
         {
             _costGradientBias += Parallelization.ParallelUpdateGradientsBiasGPU(layerLearnData);
 
             _costGradientWeight += Parallelization.ParallelUpdateGradientsWeightsGPU(layerLearnData);
         }
 
-        public void SetActivationFunction(IDNAActivation activation)
+        public void SetActivationFunction(IActivation activation)
         {
             ActivationIndex = activation.GetActivationFunctionIndex();
             this.activation = activation;
@@ -193,17 +192,17 @@ namespace DNANeuralNetwork
         public void SetActivationFunction(int index)
         {
             ActivationIndex = index;
-            this.activation = DNAActivation.GetActivationFromIndex(index);
+            this.activation = Activation.GetActivationFromIndex(index);
         }
 
         public void SetSavedActivationFunction()
         {
-            this.activation = DNAActivation.GetActivationFromIndex(ActivationIndex);
+            this.activation = Activation.GetActivationFromIndex(ActivationIndex);
         }
 
         public void InitializeParallelization()
         {
-            Parallelization = new DNAGPUParallelization(this);
+            Parallelization = new GPUParallelization(this);
         }
         public void InitializeRandomWeights(System.Random rng)
         {

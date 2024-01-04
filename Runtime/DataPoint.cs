@@ -6,13 +6,13 @@ using MachineLearningMath;
 
 namespace DNANeuralNetwork
 {
-    public class DNADataPoint
+    public class DataPoint
     {
         public Matrix inputs;
         public Matrix expectedOutputs;
         public int label;
 
-        public DNADataPoint(Matrix inputs, int label, int numLabels)
+        public DataPoint(Matrix inputs, int label, int numLabels)
         {
             this.inputs = inputs;
             this.label = label;
@@ -26,7 +26,7 @@ namespace DNANeuralNetwork
             return expOut;
         }
 
-        public DNADataPoint(Matrix inputs, Matrix outputs)
+        public DataPoint(Matrix inputs, Matrix outputs)
         {
             this.inputs = inputs;
             this.expectedOutputs = outputs;

@@ -1,50 +1,46 @@
-using System.Collections;
-using System.Collections.Generic;
-using UnityEngine;
-using System.Linq;
 using MachineLearningMath;
 using System;
 
 namespace DNANeuralNetwork
 {
-    [System.Serializable]
-    public class DNANeuralNetworkwork
+    [Serializable]
+    public class NeuralNetwork
     {
         public int[] layerSizes;
-        public DNALayer[] layers;
+        public Layer[] layers;
 
-        public IDNACost cost;
+        public ICost cost;
         System.Random rng;
-        DNANetworkLearnData[] batchLearnData;
+        NetworkLearnData[] batchLearnData;
 
-        public DNANeuralNetworkwork(int[] layerSizes)
+        public NeuralNetwork(int[] layerSizes)
         {
             this.layerSizes = layerSizes;
             rng = new System.Random();
 
-            layers = new DNALayer[layerSizes.Length - 1];
+            layers = new Layer[layerSizes.Length - 1];
 
             for (int i = 0; i < layers.Length; i++)
             {
-                layers[i] = new DNALayer(layerSizes[i], layerSizes[i + 1]);
+                layers[i] = new Layer(layerSizes[i], layerSizes[i + 1]);
             }
 
-            cost = new DNACost.MeanSquaredError();
+            cost = new Cost.MeanSquaredError();
         }
 
-        public DNANeuralNetworkwork(int[] layerSizes, IDNAActivation activation, IDNAActivation outputLayerActivation, IDNACost cost)
+        public NeuralNetwork(int[] layerSizes, IActivation activation, IActivation outputLayerActivation, ICost cost)
         {
             this.layerSizes = layerSizes;
             rng = new System.Random();
 
-            layers = new DNALayer[layerSizes.Length - 1];
+            layers = new Layer[layerSizes.Length - 1];
 
             for (int i = 0; i < layers.Length; i++)
             {
-                layers[i] = new DNALayer(layerSizes[i], layerSizes[i + 1]);
+                layers[i] = new Layer(layerSizes[i], layerSizes[i + 1]);
             }
 
-            cost = new DNACost.MeanSquaredError();
+            cost = new Cost.MeanSquaredError();
 
             SetActivationFunction(activation, outputLayerActivation);
             SetCostFunction(cost);
@@ -60,17 +56,17 @@ namespace DNANeuralNetwork
 
         public Matrix CalculateOutputs(Matrix inputs)
         {
-            foreach (DNALayer layer in layers)
+            foreach (Layer layer in layers)
             {
                 inputs = layer.CalculateOutputs(inputs);
             }
             return inputs;
         }
 
-        public double GetCost(DNADataPoint[] data)
+        public double GetCost(DataPoint[] data)
         {
             double costVal = 0;
-            foreach (DNADataPoint d in data)
+            foreach (DataPoint d in data)
             {
                 (int predictedClass, Matrix outputs) = Classify(d.inputs);
                 costVal += cost.CostFunction(outputs, d.expectedOutputs);
@@ -80,9 +76,9 @@ namespace DNANeuralNetwork
             return costVal;
         }
 
-        public void ParallelLearn(DNADataPoint[] trainingData, double learnRate, double regularization = 0, double momentum = 0)
+        public void ParallelLearn(DataPoint[] trainingData, double learnRate, double regularization = 0, double momentum = 0)
         {
-            DNAParallelNetworkLearnData batchLearnData = new DNAParallelNetworkLearnData(layers, trainingData.Length);
+            ParallelNetworkLearnData batchLearnData = new ParallelNetworkLearnData(layers, trainingData.Length);
 
             ParallelUpdateGradients(trainingData, batchLearnData);
 
@@ -93,14 +89,14 @@ namespace DNANeuralNetwork
             }
         }
 
-        public void Learn(DNADataPoint[] trainingData, double learnRate, double regularization = 0, double momentum = 0)
+        public void Learn(DataPoint[] trainingData, double learnRate, double regularization = 0, double momentum = 0)
         {
             if (batchLearnData == null || batchLearnData.Length != trainingData.Length)
             {
-                batchLearnData = new DNANetworkLearnData[trainingData.Length];
+                batchLearnData = new NetworkLearnData[trainingData.Length];
                 for (int i = 0; i < batchLearnData.Length; i++)
                 {
-                    batchLearnData[i] = new DNANetworkLearnData(layers);
+                    batchLearnData[i] = new NetworkLearnData(layers);
                 }
             }
 
@@ -116,7 +112,7 @@ namespace DNANeuralNetwork
             }
         }
 
-        void ParallelUpdateGradients(DNADataPoint[] data, DNAParallelNetworkLearnData learnData)
+        void ParallelUpdateGradients(DataPoint[] data, ParallelNetworkLearnData learnData)
         {
             //System.DateTime startTime = System.DateTime.Now;
 
@@ -155,7 +151,7 @@ namespace DNANeuralNetwork
             //Update All Hidden layer gradients
             for (int i = outputLayerIndex - 1; i >= 0; i--)
             {
-                DNALayer hiddenLayer = layers[i];
+                Layer hiddenLayer = layers[i];
 
                 hiddenLayer.ParallelCalculateHiddenLayerNodeValues(learnData.layerData[i], layers[i + 1], learnData.layerData[i + 1].nodeValues);
                 hiddenLayer.ParallelUpdateGradients(learnData.layerData[i]);
@@ -173,7 +169,7 @@ namespace DNANeuralNetwork
             //Debug.Log($"Format:{formatTime}    Parallel Operations:{layerTime}     Left Over:{leftOverTime}");
         }
 
-        void UpdateGradients(DNADataPoint data, DNANetworkLearnData learnData)
+        void UpdateGradients(DataPoint data, NetworkLearnData learnData)
         {
             System.DateTime startTime = System.DateTime.Now;
 
@@ -188,8 +184,8 @@ namespace DNANeuralNetwork
 
             //Backpropogation
             int outputLayerIndex = layers.Length - 1;
-            DNALayer outputLayer = layers[outputLayerIndex];
-            DNALayerLearnData outputLearnData = learnData.layerData[outputLayerIndex];
+            Layer outputLayer = layers[outputLayerIndex];
+            LayerLearnData outputLearnData = learnData.layerData[outputLayerIndex];
 
             //Update output layer gradients
             outputLayer.CalculateOutputLayerNodeValues(outputLearnData, data.expectedOutputs, cost);
@@ -198,8 +194,8 @@ namespace DNANeuralNetwork
             //Update All Hidden layer gradients
             for (int i = outputLayerIndex - 1; i >= 0; i--)
             {
-                DNALayerLearnData layerLearnData = learnData.layerData[i];
-                DNALayer hiddenLayer = layers[i];
+                LayerLearnData layerLearnData = learnData.layerData[i];
+                Layer hiddenLayer = layers[i];
 
                 hiddenLayer.CalculateHiddenLayerNodeValues(layerLearnData, layers[i + 1], learnData.layerData[i + 1].nodeValues);
                 hiddenLayer.UpdateGradients(layerLearnData);
@@ -215,12 +211,12 @@ namespace DNANeuralNetwork
             // Debug.Log($"Layer Operation:{layerTime}     Left Over:{leftOverTime}");
         }
 
-        public void SetCostFunction(IDNACost costFunction)
+        public void SetCostFunction(ICost costFunction)
         {
             this.cost = costFunction;
         }
 
-        public void SetActivationFunction(IDNAActivation activation)
+        public void SetActivationFunction(IActivation activation)
         {
             SetActivationFunction(activation, activation);
         }
@@ -233,17 +229,17 @@ namespace DNANeuralNetwork
 
         public void SetSavedActivationFunction()
         {
-            foreach (DNALayer layer in layers)
+            foreach (Layer layer in layers)
                 layer.SetSavedActivationFunction();
         }
 
         public void InitializeParallelization()
         {
-            foreach (DNALayer layer in layers)
+            foreach (Layer layer in layers)
                 layer.InitializeParallelization();
         }
 
-        public void SetActivationFunction(IDNAActivation activation, IDNAActivation outputLayerActivation)
+        public void SetActivationFunction(IActivation activation, IActivation outputLayerActivation)
         {
             for (int i = 0; i < layers.Length - 1; i++)
             {
@@ -270,14 +266,14 @@ namespace DNANeuralNetwork
 
     }
 
-    public class DNAParallelLayerLearnData
+    public class ParallelLayerLearnData
     {
         public double[] inputs;
         public double[] weightedInputs;
         public double[] activations;
         public double[] nodeValues;
 
-        public DNAParallelLayerLearnData(DNALayer layer, int parallelCount)
+        public ParallelLayerLearnData(Layer layer, int parallelCount)
         {
             weightedInputs = new double[layer.NumNodesOut * parallelCount];
             activations = new double[layer.NumNodesOut * parallelCount];
@@ -285,14 +281,14 @@ namespace DNANeuralNetwork
         }
     }
 
-    public class DNALayerLearnData
+    public class LayerLearnData
     {
         public Matrix inputs;
         public Matrix weightedInputs;
         public Matrix activations;
         public Matrix nodeValues;
 
-        public DNALayerLearnData(DNALayer layer)
+        public LayerLearnData(Layer layer)
         {
             weightedInputs = new Matrix(layer.NumNodesOut, 1);
             activations = new Matrix(layer.NumNodesOut, 1);
@@ -301,30 +297,30 @@ namespace DNANeuralNetwork
 
     }
 
-    public class DNAParallelNetworkLearnData
+    public class ParallelNetworkLearnData
     {
-        public DNAParallelLayerLearnData[] layerData;
+        public ParallelLayerLearnData[] layerData;
 
-        public DNAParallelNetworkLearnData(DNALayer[] layers, int parallelCount)
+        public ParallelNetworkLearnData(Layer[] layers, int parallelCount)
         {
-            layerData = new DNAParallelLayerLearnData[layers.Length];
+            layerData = new ParallelLayerLearnData[layers.Length];
             for (int i = 0; i < layers.Length; i++)
             {
-                layerData[i] = new DNAParallelLayerLearnData(layers[i], parallelCount);
+                layerData[i] = new ParallelLayerLearnData(layers[i], parallelCount);
             }
         }
     }
 
-    public class DNANetworkLearnData
+    public class NetworkLearnData
     {
-        public DNALayerLearnData[] layerData;
+        public LayerLearnData[] layerData;
 
-        public DNANetworkLearnData(DNALayer[] layers)
+        public NetworkLearnData(Layer[] layers)
         {
-            layerData = new DNALayerLearnData[layers.Length];
+            layerData = new LayerLearnData[layers.Length];
             for (int i = 0; i < layers.Length; i++)
             {
-                layerData[i] = new DNALayerLearnData(layers[i]);
+                layerData[i] = new LayerLearnData(layers[i]);
             }
         }
     }

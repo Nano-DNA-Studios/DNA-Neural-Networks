@@ -37,7 +37,7 @@ public class NeuralNetworkTrainer : MonoBehaviour
     [SerializeField] NeuralNetworkSettings networkSettings;
 
     [Header("Image To Data")]
-    List<DNADataPoint> allData = new List<DNADataPoint>(); //Will need to be cleared (I think)
+    List<DataPoint> allData = new List<DataPoint>(); //Will need to be cleared (I think)
     [SerializeField] int outputNum;
 
     [Header("UI Stuff")]
@@ -49,11 +49,11 @@ public class NeuralNetworkTrainer : MonoBehaviour
     [SerializeField] GameObject logLine;
     [SerializeField] Transform content;
 
-    DNADataPoint[] allTrainData;
-    DNABatch[] batches;
-    DNADataPoint[] evaluateData;
+    DataPoint[] allTrainData;
+    Batch[] batches;
+    DataPoint[] evaluateData;
     //DataPoint[,] feedingData;
-    DNANeuralNetworkwork bestNetwork;
+    NeuralNetwork bestNetwork;
     float lastAccuracy;
     double bestCost = 10;
     double currentLearningRate;
@@ -75,11 +75,11 @@ public class NeuralNetworkTrainer : MonoBehaviour
 
     }
 
-    public IEnumerator importFromFolder(List<string> paths, List<DNADataPoint> data)
+    public IEnumerator importFromFolder(List<string> paths, List<DataPoint> data)
     {
         createLine("Starting Image Importing");
         List<List<Texture2D>> newImages = new List<List<Texture2D>>();
-        List<DNADataPoint> evalData = new List<DNADataPoint>();
+        List<DataPoint> evalData = new List<DataPoint>();
         int testingIndex = 0;
 
         for (int i = 0; i < paths.Count; i++)
@@ -173,10 +173,10 @@ public class NeuralNetworkTrainer : MonoBehaviour
         //Create a new Neural Network
         //NeuralNetwork neuro = new NeuralNetwork(networkSettings.neuralNetSize, hiddenActivation, outputActivation, costType);
 
-        DNANeuralNetworkwork neuro = new DNANeuralNetworkwork(networkSettings.networkSize, DNAActivation.GetActivationFromType(networkSettings.activationType), DNAActivation.GetActivationFromType(networkSettings.outputActivationType), DNACost.GetCostFromType(networkSettings.costType));
+        NeuralNetwork neuro = new NeuralNetwork(networkSettings.networkSize, Activation.GetActivationFromType(networkSettings.activationType), Activation.GetActivationFromType(networkSettings.outputActivationType), Cost.GetCostFromType(networkSettings.costType));
 
         //Set Cost function
-        neuro.SetCostFunction(DNACost.GetCostFromType(networkSettings.costType));
+        neuro.SetCostFunction(Cost.GetCostFromType(networkSettings.costType));
 
         currentLearningRate = networkSettings.initialLearningRate;
 
@@ -188,7 +188,7 @@ public class NeuralNetworkTrainer : MonoBehaviour
 
         System.Random rng = new System.Random();
 
-        List<DNADataPoint> shuffledData;
+        List<DataPoint> shuffledData;
         int numOfBatches = 0;
 
         for (int epoch = 0; epoch < numOfEpochs; epoch++)
@@ -210,11 +210,11 @@ public class NeuralNetworkTrainer : MonoBehaviour
                 createLine("Starting Batching");
                 yield return null;
 
-                batches = new DNABatch[numOfBatches];
+                batches = new Batch[numOfBatches];
 
                 for (int i = 0; i < batches.Length; i++)
                 {
-                    batches[i] = new DNABatch(networkSettings.dataPerBatch);
+                    batches[i] = new Batch(networkSettings.dataPerBatch);
 
                     for (int j = 0; j < networkSettings.dataPerBatch; j++)
                     {
@@ -275,7 +275,7 @@ public class NeuralNetworkTrainer : MonoBehaviour
         yield return null;
     }
 
-    public IEnumerator EvaluateNetwork(DNANeuralNetworkwork neuro, DNADataPoint[] data)
+    public IEnumerator EvaluateNetwork(NeuralNetwork neuro, DataPoint[] data)
     {
         int accuracy = 0;
 
@@ -382,7 +382,7 @@ public class NeuralNetworkTrainer : MonoBehaviour
         }
     }
 
-    public DNADataPoint imageToData(Texture2D image, int labelIndex, int labelNum)
+    public DataPoint imageToData(Texture2D image, int labelIndex, int labelNum)
     {
 
         Matrix pixels = new Matrix(image.height * image.width, 1);
@@ -399,12 +399,12 @@ public class NeuralNetworkTrainer : MonoBehaviour
             }
         }
 
-        DNADataPoint data = new DNADataPoint(pixels, labelIndex, labelNum);
+        DataPoint data = new DataPoint(pixels, labelIndex, labelNum);
 
         return data;
 
     }
-    public IEnumerator displayCost(bool all, bool after, DNANeuralNetworkwork neuro, DNADataPoint[] data)
+    public IEnumerator displayCost(bool all, bool after, NeuralNetwork neuro, DataPoint[] data)
     {
         if (after)
         {
@@ -623,7 +623,7 @@ public class NeuralNetworkTrainer : MonoBehaviour
 
     }
 
-    public IEnumerator ShuffleArray(List<DNADataPoint> data)
+    public IEnumerator ShuffleArray(List<DataPoint> data)
     {
         int elementsRemainingToShuffle = data.Count;
         int randomIndex = 0;
@@ -633,7 +633,7 @@ public class NeuralNetworkTrainer : MonoBehaviour
         {
             // Choose a random element from array
             randomIndex = prng.Next(0, elementsRemainingToShuffle);
-            DNADataPoint chosenElement = data[randomIndex];
+            DataPoint chosenElement = data[randomIndex];
 
             // Swap the randomly chosen element with the last unshuffled element in the array
             elementsRemainingToShuffle--;
@@ -646,7 +646,7 @@ public class NeuralNetworkTrainer : MonoBehaviour
         }
     }
 
-    public IEnumerator ShuffleArray(DNABatch[] data)
+    public IEnumerator ShuffleArray(Batch[] data)
     {
         int elementsRemainingToShuffle = data.Length;
         int randomIndex = 0;
@@ -656,7 +656,7 @@ public class NeuralNetworkTrainer : MonoBehaviour
         {
             // Choose a random element from array
             randomIndex = prng.Next(0, elementsRemainingToShuffle);
-            DNABatch chosenElement = data[randomIndex];
+            Batch chosenElement = data[randomIndex];
 
             // Swap the randomly chosen element with the last unshuffled element in the array
             elementsRemainingToShuffle--;
@@ -669,7 +669,7 @@ public class NeuralNetworkTrainer : MonoBehaviour
         }
     }
 
-    public IEnumerator ShuffleArray(DNADataPoint[] data)
+    public IEnumerator ShuffleArray(DataPoint[] data)
     {
         int elementsRemainingToShuffle = data.Length;
         int randomIndex = 0;
@@ -679,7 +679,7 @@ public class NeuralNetworkTrainer : MonoBehaviour
         {
             // Choose a random element from array
             randomIndex = prng.Next(0, elementsRemainingToShuffle);
-            DNADataPoint chosenElement = data[randomIndex];
+            DataPoint chosenElement = data[randomIndex];
 
             // Swap the randomly chosen element with the last unshuffled element in the array
             elementsRemainingToShuffle--;
@@ -692,7 +692,7 @@ public class NeuralNetworkTrainer : MonoBehaviour
         }
     }
 
-    public IEnumerator saveBestNetwork(DNANeuralNetworkwork network, float accuracy)
+    public IEnumerator saveBestNetwork(NeuralNetwork network, float accuracy)
     {
         //Save best
         if (bestNetwork != null)
@@ -735,7 +735,7 @@ public class NeuralNetworkTrainer : MonoBehaviour
         yield return null;
     }
 
-    private void saveNetwork(DNANeuralNetworkwork neuro, string name)
+    private void saveNetwork(NeuralNetwork neuro, string name)
     {
         var dir = "Assets/Resources/NeuralNetworks/MatrixNetworks" + "/" + name + ".json";
 

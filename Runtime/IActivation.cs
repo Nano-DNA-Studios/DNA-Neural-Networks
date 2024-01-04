@@ -5,13 +5,13 @@ using MachineLearningMath;
 
 namespace DNANeuralNetwork
 {
-    public interface IDNAActivation
+    public interface IActivation
     {
         Matrix Activate(Matrix matrix);
 
         Matrix Derivative(Matrix matrix);
 
-        DNAActivation.ActivationType GetActivationType();
+        Activation.ActivationType GetActivationType();
 
         int GetActivationFunctionIndex();
     }

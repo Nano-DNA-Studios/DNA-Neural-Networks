@@ -3,7 +3,7 @@ using static System.Math;
 
 namespace DNANeuralNetwork
 {
-    public class DNACost
+    public class Cost
     {
 		public enum CostType
 		{
@@ -11,7 +11,7 @@ namespace DNANeuralNetwork
 			CrossEntropy
 		}
 
-		public static IDNACost GetCostFromType(CostType type)
+		public static ICost GetCostFromType(CostType type)
 		{
 			switch (type)
 			{
@@ -25,7 +25,7 @@ namespace DNANeuralNetwork
 			}
 		}
 
-		public class MeanSquaredError : IDNACost
+		public class MeanSquaredError : ICost
 		{
 			public double CostFunction(Matrix predictedOutputs, Matrix expectedOutputs)
 			{
@@ -55,7 +55,7 @@ namespace DNANeuralNetwork
 			}
 		}
 
-		public class CrossEntropy : IDNACost
+		public class CrossEntropy : ICost
 		{
 			// Note: expected outputs are expected to all be either 0 or 1
 			public double CostFunction(Matrix predictedOutputs, Matrix expectedOutputs)

@@ -1,21 +1,19 @@
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
-using DNANeuralNetwork;
+using System;
 
 
 namespace DNANeuralNetwork
 {
-    [System.Serializable]
+    [Serializable]
     public class NeuralNetworkInfo
     {
         public Vector2Int inputSize;
         public LayerInfo[] layerInfos;
-        public DNACost.CostType costType;
+        public Cost.CostType costType;
 
     }
 
-    [System.Serializable]
+    [Serializable]
     public class LayerInfo
     {
         //public LayerTypes type;
@@ -30,7 +28,7 @@ namespace DNANeuralNetwork
     public struct NeuralLayerInfo
     {
         public int outputSize;
-        public DNAActivation.ActivationType activationType;
+        public Activation.ActivationType activationType;
     }
 }
 

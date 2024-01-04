@@ -1,15 +1,13 @@
-using System.Collections;
-using System.Collections.Generic;
-using UnityEngine;
 using MachineLearningMath;
 using static System.Math;
+using System;
 
 namespace DNANeuralNetwork
 {
-	[System.Serializable]
-	public struct DNAActivation
+	[Serializable]
+	public struct Activation
 	{
-		[System.Serializable]
+		[Serializable]
 		public enum ActivationType
 		{
 			Sigmoid,
@@ -19,7 +17,7 @@ namespace DNANeuralNetwork
 			Softmax
 		}
 
-		public static IDNAActivation GetActivationFromType(ActivationType type)
+		public static IActivation GetActivationFromType(ActivationType type)
 		{
 			switch (type)
 			{
@@ -39,7 +37,7 @@ namespace DNANeuralNetwork
 			}
 		}
 
-		public static IDNAActivation GetActivationFromIndex(int activationIndex)
+		public static IActivation GetActivationFromIndex(int activationIndex)
 		{
 			switch (activationIndex)
 			{
@@ -59,8 +57,8 @@ namespace DNANeuralNetwork
 			}
 		}
 
-		[System.Serializable]
-		public readonly struct Sigmoid : IDNAActivation
+		[Serializable]
+		public readonly struct Sigmoid : IActivation
 		{
 			public Matrix Activate(Matrix matrix)
 			{
@@ -93,8 +91,8 @@ namespace DNANeuralNetwork
             }
 		}
 
-		[System.Serializable]
-		public readonly struct TanH : IDNAActivation
+		[Serializable]
+		public readonly struct TanH : IActivation
 		{
 			public Matrix Activate(Matrix matrix)
 			{
@@ -134,8 +132,8 @@ namespace DNANeuralNetwork
 			}
 		}
 
-		[System.Serializable]
-		public readonly struct ReLU : IDNAActivation
+		[Serializable]
+		public readonly struct ReLU : IActivation
 		{
 			public Matrix Activate(Matrix matrix)
 			{
@@ -168,8 +166,8 @@ namespace DNANeuralNetwork
 			}
 		}
 
-		[System.Serializable]
-		public readonly struct SiLU : IDNAActivation
+		[Serializable]
+		public readonly struct SiLU : IActivation
 		{
 			public Matrix Activate(Matrix matrix)
 			{
@@ -205,8 +203,8 @@ namespace DNANeuralNetwork
 			}
 		}
 
-		[System.Serializable]
-		public readonly struct Softmax : IDNAActivation
+		[Serializable]
+		public readonly struct Softmax : IActivation
 		{
 			public Matrix Activate(Matrix matrix)
 			{

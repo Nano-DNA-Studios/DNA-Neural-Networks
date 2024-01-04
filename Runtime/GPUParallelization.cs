@@ -5,7 +5,7 @@ using MachineLearningMath;
 
 namespace DNANeuralNetwork
 {
-    public class DNAGPUParallelization
+    public class GPUParallelization
     {
         public static ComputeShader LayerOutputGPU;
         public static ComputeShader LayerOutputGPUFloat;
@@ -38,13 +38,13 @@ namespace DNANeuralNetwork
         /// <summary>
         /// Reference to the Layer
         /// </summary>
-        public DNALayer Layer { get; set; }
+        public Layer Layer { get; set; }
 
         /// <summary>
         /// Initializes the GPU Parallelization
         /// </summary>
         /// <param name="layer"></param>
-        public DNAGPUParallelization(DNALayer layer)
+        public GPUParallelization(Layer layer)
         {
             Layer = layer;
         }
@@ -265,7 +265,7 @@ namespace DNANeuralNetwork
         }
 
         //Parallel Version
-        public void ParallelCalculateOutputLayerNodeValues(DNAParallelLayerLearnData layerLearnData, double[] expectedOutput, IDNACost cost, Matrix expectedOutputDim)
+        public void ParallelCalculateOutputLayerNodeValues(ParallelLayerLearnData layerLearnData, double[] expectedOutput, ICost cost, Matrix expectedOutputDim)
         {
             int expectedOutputLength = expectedOutput.Length;
             int weightedInputLength = layerLearnData.weightedInputs.Length;
@@ -322,7 +322,7 @@ namespace DNANeuralNetwork
             derivativeTypes.Release();
         }
 
-        public Matrix ParallelUpdateGradientsWeightsGPU(DNAParallelLayerLearnData layerLearnData)
+        public Matrix ParallelUpdateGradientsWeightsGPU(ParallelLayerLearnData layerLearnData)
         {
             int inputsLength = layerLearnData.inputs.Length;
             int nodeValuesLength = layerLearnData.nodeValues.Length;
@@ -371,7 +371,7 @@ namespace DNANeuralNetwork
             return costGradientWeight;
         }
 
-        public Matrix ParallelUpdateGradientsBiasGPU(DNAParallelLayerLearnData layerLearnData)
+        public Matrix ParallelUpdateGradientsBiasGPU(ParallelLayerLearnData layerLearnData)
         {
             int nodeValuesLength = layerLearnData.nodeValues.Length;
             int costGradientBiasLength = _costGradientBias.Length;
@@ -414,7 +414,7 @@ namespace DNANeuralNetwork
             return costGradientBias;
         }
 
-        public void ParallelHiddenLayerNodeCalc(DNAParallelLayerLearnData layerLearnData, DNALayer oldLayer, double[] oldNodeValues)
+        public void ParallelHiddenLayerNodeCalc(ParallelLayerLearnData layerLearnData, Layer oldLayer, double[] oldNodeValues)
         {
             int layerLearnDataLength = layerLearnData.weightedInputs.Length;
             int oldNodeValuesLength = oldNodeValues.Length;

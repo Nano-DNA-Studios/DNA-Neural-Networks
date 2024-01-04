@@ -1,27 +1,23 @@
-using System.Collections;
-using System.Collections.Generic;
-using UnityEngine;
-using DNANeuralNetwork;
 
 namespace DNANeuralNetwork
 {
-    public class DNABatch
+    public class Batch
     {
-        public DNADataPoint[] data;
+        public DataPoint[] data;
         public int size;
 
-        public DNABatch(int size)
+        public Batch(int size)
         {
             this.size = size;
-            this.data = new DNADataPoint[size];
+            this.data = new DataPoint[size];
         }
 
-        public void addData(DNADataPoint data, int index)
+        public void addData(DataPoint data, int index)
         {
             this.data[index] = data;
         }
 
-        public void setData(DNADataPoint[] data)
+        public void setData(DataPoint[] data)
         {
             this.data = data;
         }

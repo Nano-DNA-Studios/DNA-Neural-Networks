@@ -9,9 +9,9 @@ namespace DNANeuralNetwork
 	{
 		public int[] networkSize;
 
-		public DNAActivation.ActivationType activationType;
-		public DNAActivation.ActivationType outputActivationType;
-		public DNACost.CostType costType;
+		public Activation.ActivationType activationType;
+		public Activation.ActivationType outputActivationType;
+		public Cost.CostType costType;
 
 		public double initialLearningRate;
 		public double learnRateDecay;
@@ -21,9 +21,9 @@ namespace DNANeuralNetwork
 
 		public NeuralNetworkSettings()
 		{
-			activationType = DNAActivation.ActivationType.ReLU;
-			outputActivationType = DNAActivation.ActivationType.Softmax;
-			costType = DNACost.CostType.CrossEntropy;
+			activationType = Activation.ActivationType.ReLU;
+			outputActivationType = Activation.ActivationType.Softmax;
+			costType = Cost.CostType.CrossEntropy;
 			initialLearningRate = 0.05;
 			learnRateDecay = 0.075;
 			dataPerBatch = 32;
