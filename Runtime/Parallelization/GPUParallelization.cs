@@ -209,13 +209,13 @@ namespace MachineLearning.Parallelization
             return (weightedInputs, activation);
         }
 
-        public (double[] weightedInputs, double[] activation) ParallelLayerOutputCalculationTrainingGPU(double[] inputs)
+        public (Tensor weightedInputs, Tensor activation) ParallelLayerOutputCalculationTrainingGPU(Tensor inputs)
         {
             int inputsLength = inputs.Length;
             int outputsLength = Layer.ParallelBatchSize * weights.Height * biases.Width;
 
-            double[] activation = new double[outputsLength];
-            double[] weightedInputs = new double[outputsLength];
+            Tensor activation = new Tensor(new int[] { inputs.Dimensions[0], weights.Height, biases.Width });
+            Tensor weightedInputs = new Tensor(new int[] { inputs.Dimensions[0], weights.Height, biases.Width });
 
             ComputeShader computeShader = ParallelLayerOutputGPU;
 
@@ -231,7 +231,7 @@ namespace MachineLearning.Parallelization
             //Set Data
             weightsVals.SetData(weights.Values);
             biasVals.SetData(biases.Values);
-            inputsVals.SetData(inputs);
+            inputsVals.SetData(inputs.Values);
             dimensions.SetData(new int[] { weights.Width, weights.Height, biases.Width, biases.Height, biases.Width, weights.Width });
             activationFunction.SetData(new int[] { Layer.activation.GetActivationFunctionIndex() });
 
@@ -245,11 +245,11 @@ namespace MachineLearning.Parallelization
             computeShader.SetBuffer(0, "activationFunction", activationFunction);
 
             //Calculate
-            computeShader.Dispatch(0, biases.Width, biases.Height, Layer.ParallelBatchSize);
+            computeShader.Dispatch(0, biases.Width, biases.Height, inputs.Dimensions[0]);
 
             //Receive Result
-            activationVals.GetData(activation);
-            weightedInputVals.GetData(weightedInputs);
+            activationVals.GetData(activation.Values);
+            weightedInputVals.GetData(weightedInputs.Values);
 
             //Clear Memory
             inputsVals.Release();
@@ -264,7 +264,7 @@ namespace MachineLearning.Parallelization
         }
 
         //Parallel Version
-        public void ParallelCalculateOutputLayerNodeValues(ParallelLayerLearnData layerLearnData, double[] expectedOutput, ICost cost, Matrix expectedOutputDim)
+        public void ParallelCalculateOutputLayerNodeValues(ParallelLayerLearnData layerLearnData, Tensor expectedOutput, ICost cost, Matrix expectedOutputDim)
         {
             int expectedOutputLength = expectedOutput.Length;
             int weightedInputLength = layerLearnData.weightedInputs.Length;
@@ -289,11 +289,11 @@ namespace MachineLearning.Parallelization
             //Set Data
             dimensions.SetData(new int[] { expectedOutputDim.Width, expectedOutputDim.Height });
 
-            weightedInputs.SetData(layerLearnData.weightedInputs);
+            weightedInputs.SetData(layerLearnData.weightedInputs.Values);
 
-            activations.SetData(layerLearnData.activations);
+            activations.SetData(layerLearnData.activations.Values);
 
-            expectedOutputs.SetData(expectedOutput);
+            expectedOutputs.SetData(expectedOutput.Values);
 
             derivativeTypes.SetData(new int[] { cost.GetCostIndex(), Layer.activation.GetActivationFunctionIndex() });
 
@@ -309,7 +309,7 @@ namespace MachineLearning.Parallelization
             computeShader.Dispatch(0, expectedOutputDim.Width, expectedOutputDim.Height, Layer.ParallelBatchSize);
 
             //Receive Result
-            nodeValues.GetData(layerLearnData.nodeValues);
+            nodeValues.GetData(layerLearnData.nodeValues.Values);
 
             //Clear Memory
             weightedInputs.Release();
@@ -341,9 +341,9 @@ namespace MachineLearning.Parallelization
             //Set Data
             dimensions.SetData(new int[] { biases.Width, biases.Height, weights.Width, biases.Width, _costGradientWeight.Width, _costGradientWeight.Height });
 
-            inputsValues.SetData(layerLearnData.inputs);
+            inputsValues.SetData(layerLearnData.inputs.Values);
 
-            nodeValuesValues.SetData(layerLearnData.nodeValues);
+            nodeValuesValues.SetData(layerLearnData.nodeValues.Values);
 
             weightsValues.SetData(new double[costGradientWeightLength]);
 
@@ -387,7 +387,7 @@ namespace MachineLearning.Parallelization
             //Set Data
             dimensions.SetData(new int[] { biases.Width, biases.Height });
 
-            nodeValuesValues.SetData(layerLearnData.nodeValues);
+            nodeValuesValues.SetData(layerLearnData.nodeValues.Values);
 
             biasValues.SetData(new double[costGradientBiasLength]);
 
@@ -413,7 +413,7 @@ namespace MachineLearning.Parallelization
             return costGradientBias;
         }
 
-        public void ParallelHiddenLayerNodeCalc(ParallelLayerLearnData layerLearnData, Layer oldLayer, double[] oldNodeValues)
+        public void ParallelHiddenLayerNodeCalc(ParallelLayerLearnData layerLearnData, Layer oldLayer, Tensor oldNodeValues)
         {
             int layerLearnDataLength = layerLearnData.weightedInputs.Length;
             int oldNodeValuesLength = oldNodeValues.Length;
@@ -432,8 +432,8 @@ namespace MachineLearning.Parallelization
             //Set Data 
             dimensions.SetData(new int[] { oldLayer.weights.Height, oldLayer.weights.Width, oldLayer.biases.Width, oldLayer.biases.Height, biases.Width, biases.Height, biases.Width, biases.Height });
             oldLayerWeights.SetData(oldLayer.weights.Values); //Transpose
-            oldNodeVals.SetData(oldNodeValues);
-            weightedInputs.SetData(layerLearnData.weightedInputs);
+            oldNodeVals.SetData(oldNodeValues.Values);
+            weightedInputs.SetData(layerLearnData.weightedInputs.Values);
             nodeValues.SetData(new double[nodeValuesLength]);
             activationDerivative.SetData(new int[] { Layer.activation.GetActivationFunctionIndex() });
 
@@ -450,7 +450,7 @@ namespace MachineLearning.Parallelization
             computeShader.Dispatch(0, biases.Width, biases.Height, Layer.ParallelBatchSize);
 
             //Receive Result
-            nodeValues.GetData(layerLearnData.nodeValues);
+            nodeValues.GetData(layerLearnData.nodeValues.Values);
 
             //Clear Memory
             weightedInputs.Release();

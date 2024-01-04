@@ -118,18 +118,13 @@ namespace MachineLearning
         {
             //System.DateTime startTime = System.DateTime.Now;
 
-            double[] inputsToNextLayer = new double[data.Length * data[0].inputs.Length];
-            double[] expectedOutputs = new double[data.Length * data[0].expectedOutputs.Length];
+            Tensor inputsToNextLayer = new Tensor(new int[] { data.Length, data[0].inputs.Height, data[0].inputs.Width });
+            Tensor expectedOutputs = new Tensor(new int[] { data.Length, data[0].expectedOutputs.Height, data[0].expectedOutputs.Width });
 
-            int countInput = 0;
-            int countOutput = 0;
             for (int i = 0; i < data.Length; i++)
             {
-                Array.Copy(data[i].expectedOutputs.Values, 0, expectedOutputs, countOutput, data[i].expectedOutputs.Values.Length);
-                countOutput += data[i].expectedOutputs.Values.Length;
-
-                Array.Copy(data[i].inputs.Values, 0, inputsToNextLayer, countInput, data[i].inputs.Values.Length);
-                countInput += data[i].inputs.Values.Length;
+                inputsToNextLayer.MatrixProperties[i] = data[i].inputs;
+                expectedOutputs.MatrixProperties[i] = data[i].expectedOutputs;
             }
 
             // System.DateTime format = System.DateTime.Now;
@@ -270,16 +265,16 @@ namespace MachineLearning
 
     public class ParallelLayerLearnData
     {
-        public double[] inputs;
-        public double[] weightedInputs;
-        public double[] activations;
-        public double[] nodeValues;
+        public Tensor inputs;
+        public Tensor weightedInputs;
+        public Tensor activations;
+        public Tensor nodeValues;
 
         public ParallelLayerLearnData(Layer layer, int parallelCount)
         {
-            weightedInputs = new double[layer.NumNodesOut * parallelCount];
-            activations = new double[layer.NumNodesOut * parallelCount];
-            nodeValues = new double[layer.NumNodesOut * parallelCount];
+            weightedInputs = new Tensor(new int[] { parallelCount, 2, 2 });
+            activations = new Tensor(new int[] { parallelCount, 2, 2 });
+            nodeValues = new Tensor(new int[] { parallelCount, 2, 2 });
         }
     }
 

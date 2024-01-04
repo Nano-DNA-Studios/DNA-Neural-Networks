@@ -102,9 +102,9 @@ namespace MachineLearning
             return learnData.activations;
         }
 
-        public double[] ParallelCalculateOutputs(double[] inputs, ParallelLayerLearnData learnData) //LayerLearnData[] learnData
+        public Tensor ParallelCalculateOutputs(Tensor inputs, ParallelLayerLearnData learnData) //LayerLearnData[] learnData
         {
-            (double[] weightedInputs, double[] activation) = Parallelization.ParallelLayerOutputCalculationTrainingGPU(inputs);
+            (Tensor weightedInputs, Tensor activation) = Parallelization.ParallelLayerOutputCalculationTrainingGPU(inputs);
 
             //Set the Inputs
             learnData.inputs = inputs;
@@ -143,7 +143,7 @@ namespace MachineLearning
                 layerLearnData.nodeValues[i] = costDerivative[i] * activationDerivative[i];
         }
 
-        public void ParallelCalculateOutputLayerNodeValues(ParallelLayerLearnData layerLearnData, double[] expectedOutput, ICost cost, Matrix expectedOutputDim)
+        public void ParallelCalculateOutputLayerNodeValues(ParallelLayerLearnData layerLearnData, Tensor expectedOutput, ICost cost, Matrix expectedOutputDim)
         {
             Parallelization.ParallelCalculateOutputLayerNodeValues(layerLearnData, expectedOutput, cost, expectedOutputDim);
         }
@@ -160,7 +160,7 @@ namespace MachineLearning
             layerLearnData.nodeValues = newNodeValues;
         }
 
-        public void ParallelCalculateHiddenLayerNodeValues(ParallelLayerLearnData layerLearnData, Layer oldLayer, double[] oldNodeValues)
+        public void ParallelCalculateHiddenLayerNodeValues(ParallelLayerLearnData layerLearnData, Layer oldLayer, Tensor oldNodeValues)
         {
             Parallelization.ParallelHiddenLayerNodeCalc(layerLearnData, oldLayer, oldNodeValues);
         }
