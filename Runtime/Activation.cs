@@ -1,7 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-using DNAMatrices;
+using MachineLearningMath;
 using static System.Math;
 
 namespace DNANeuralNetwork
@@ -62,9 +62,9 @@ namespace DNANeuralNetwork
 		[System.Serializable]
 		public readonly struct Sigmoid : IDNAActivation
 		{
-			public DNAMatrix Activate(DNAMatrix matrix)
+			public Matrix Activate(Matrix matrix)
 			{
-				DNAMatrix activation = new DNAMatrix(matrix.Height, matrix.Width);
+				Matrix activation = new Matrix(matrix.Height, matrix.Width);
 
 				for (int i = 0; i < activation.Length; i++)
 					activation[i] = 1.0 / (1 + Exp(-matrix[i]));
@@ -72,9 +72,9 @@ namespace DNANeuralNetwork
 				return activation;
 			}
 
-			public DNAMatrix Derivative(DNAMatrix matrix)
+			public Matrix Derivative(Matrix matrix)
 			{
-				DNAMatrix activation = Activate(matrix);
+				Matrix activation = Activate(matrix);
 
 				for (int i = 0; i < activation.Length; i++)
 					activation[i] = activation[i] * (1 - activation[i]);
@@ -96,9 +96,9 @@ namespace DNANeuralNetwork
 		[System.Serializable]
 		public readonly struct TanH : IDNAActivation
 		{
-			public DNAMatrix Activate(DNAMatrix matrix)
+			public Matrix Activate(Matrix matrix)
 			{
-				DNAMatrix activation = new DNAMatrix(matrix.Height, matrix.Width);
+				Matrix activation = new Matrix(matrix.Height, matrix.Width);
 
 				for (int i = 0; i < activation.Length; i++)
                 {
@@ -109,9 +109,9 @@ namespace DNANeuralNetwork
 				return activation;
 			}
 
-			public DNAMatrix Derivative(DNAMatrix matrix)
+			public Matrix Derivative(Matrix matrix)
 			{
-				DNAMatrix activation = new DNAMatrix(matrix.Height, matrix.Width);
+				Matrix activation = new Matrix(matrix.Height, matrix.Width);
 
 				for (int i = 0; i < activation.Length; i++)
                 {
@@ -137,9 +137,9 @@ namespace DNANeuralNetwork
 		[System.Serializable]
 		public readonly struct ReLU : IDNAActivation
 		{
-			public DNAMatrix Activate(DNAMatrix matrix)
+			public Matrix Activate(Matrix matrix)
 			{
-				DNAMatrix activation = new DNAMatrix(matrix.Height, matrix.Width);
+				Matrix activation = new Matrix(matrix.Height, matrix.Width);
 
 				for (int i = 0; i < activation.Length; i++)
 					activation[i] = Max(0, matrix[i]);
@@ -147,9 +147,9 @@ namespace DNANeuralNetwork
 				return activation;
 			}
 
-			public DNAMatrix Derivative(DNAMatrix matrix)
+			public Matrix Derivative(Matrix matrix)
 			{
-				DNAMatrix activation = new DNAMatrix(matrix.Height, matrix.Width);
+				Matrix activation = new Matrix(matrix.Height, matrix.Width);
 
 				for (int i = 0; i < activation.Length; i++)
 					activation[i] = (matrix[i] > 0) ? 1 : 0;
@@ -171,9 +171,9 @@ namespace DNANeuralNetwork
 		[System.Serializable]
 		public readonly struct SiLU : IDNAActivation
 		{
-			public DNAMatrix Activate(DNAMatrix matrix)
+			public Matrix Activate(Matrix matrix)
 			{
-				DNAMatrix activation = new DNAMatrix(matrix.Height, matrix.Width);
+				Matrix activation = new Matrix(matrix.Height, matrix.Width);
 
 				for (int i = 0; i < activation.Length; i++)
 					activation[i] = matrix[i] / (1 + Exp(-matrix[i]));
@@ -181,9 +181,9 @@ namespace DNANeuralNetwork
 				return activation;
 			}
 
-			public DNAMatrix Derivative(DNAMatrix matrix)
+			public Matrix Derivative(Matrix matrix)
 			{
-				DNAMatrix activation = new DNAMatrix(matrix.Height, matrix.Width);
+				Matrix activation = new Matrix(matrix.Height, matrix.Width);
 
 				for (int i = 0; i < activation.Length; i++)
                 {
@@ -208,14 +208,14 @@ namespace DNANeuralNetwork
 		[System.Serializable]
 		public readonly struct Softmax : IDNAActivation
 		{
-			public DNAMatrix Activate(DNAMatrix matrix)
+			public Matrix Activate(Matrix matrix)
 			{
 				double expSum = 0;
 
 				for (int i = 0; i < matrix.Length; i++)
 					expSum += Exp(matrix[i]);
 
-				DNAMatrix activation = new DNAMatrix(matrix.Height, matrix.Width);
+				Matrix activation = new Matrix(matrix.Height, matrix.Width);
 
 				for (int i = 0; i < activation.Length; i++)
 					activation[i] = Exp(matrix[i]) / expSum;
@@ -223,14 +223,14 @@ namespace DNANeuralNetwork
 				return activation;
 			}
 
-			public DNAMatrix Derivative(DNAMatrix matrix)
+			public Matrix Derivative(Matrix matrix)
 			{
 				double expSum = 0;
 
 				for (int i = 0; i < matrix.Length; i++)
 					expSum += Exp(matrix[i]);
 
-				DNAMatrix activation = new DNAMatrix(matrix.Height, matrix.Width);
+				Matrix activation = new Matrix(matrix.Height, matrix.Width);
 
 				for (int i = 0; i < activation.Length; i++)
                 {

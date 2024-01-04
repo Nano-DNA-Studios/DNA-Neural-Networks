@@ -105,9 +105,9 @@ public class OldStuff
             this.cost = costFunction;
         }
 
-        public DNAMatrix[] CalculateOutputs(DNAMatrix input)
+        public Matrix[] CalculateOutputs(Matrix input)
         {
-            DNAMatrix[] inputs = new DNAMatrix[1];
+            Matrix[] inputs = new Matrix[1];
             inputs[0] = input;
 
             foreach (DNALayer layer in layers)
@@ -149,7 +149,7 @@ public class OldStuff
                 hiddenLayer.UpdateGradients(layerLearnData);
             }
             
-            DNAMatrix[] inputsToNextLayer = new DNAMatrix[1];
+            Matrix[] inputsToNextLayer = new Matrix[1];
 
             for (int i = 0; i < layers.Length; i++)
             {
@@ -241,13 +241,13 @@ public class OldStuff
     public class DNALayerLearnData
     {
         //Theoretically only need inputs, weightedInputs? and nodeValues?
-        public DNAMatrix[] inputs;
-        public DNAMatrix[] weightedInputs;
-        public DNAMatrix[] activations;
-        public DNAMatrix[] outputs;
+        public Matrix[] inputs;
+        public Matrix[] weightedInputs;
+        public Matrix[] activations;
+        public Matrix[] outputs;
 
         //Node Values are for the derivatives
-        public DNAMatrix[] nodeValues;
+        public Matrix[] nodeValues;
 
         public DNALayerLearnData(DNALayer layer)
         {
@@ -286,14 +286,14 @@ public class OldStuff
         public ILayer iLayer;
 
         //Maybe make biases a matrix?
-        public DNAMatrix[] weights;
+        public Matrix[] weights;
         public double[] biases;
 
-        public DNAMatrix[] costGradientWeight;
+        public Matrix[] costGradientWeight;
         public double[] costGradientBias;
 
         //Momentum
-        public DNAMatrix[] weightVelocities;
+        public Matrix[] weightVelocities;
         public double[] biasVelocities;
 
 
@@ -354,21 +354,21 @@ public class OldStuff
         /// <param name="inputs"></param>
         /// <param name="layerLearnData"></param>
         /// <returns></returns>
-        public DNAMatrix[] CalculateOutputs(DNAMatrix[] inputs, DNALayerLearnData layerLearnData)
+        public Matrix[] CalculateOutputs(Matrix[] inputs, DNALayerLearnData layerLearnData)
         {
             layerLearnData.inputs = inputs;
 
-            DNAMatrix[] outputs = iLayer.CalculateOutputs(inputs);
+            Matrix[] outputs = iLayer.CalculateOutputs(inputs);
 
             layerLearnData.outputs = outputs;
 
             return outputs;
         }
 
-        public void CalculateOutputLayerNodeValues(DNALayerLearnData layerLearnData, DNAMatrix expectedOutputs, ICost cost)
+        public void CalculateOutputLayerNodeValues(DNALayerLearnData layerLearnData, Matrix expectedOutputs, ICost cost)
         {
-            layerLearnData.nodeValues = new DNAMatrix[1];
-            layerLearnData.nodeValues[0] = new DNAMatrix(expectedOutputs.matrixDimensions);
+            layerLearnData.nodeValues = new Matrix[1];
+            layerLearnData.nodeValues[0] = new Matrix(expectedOutputs.matrixDimensions);
             for (int i = 0; i < expectedOutputs.values.Length; i++)
             {
                 layerLearnData.nodeValues[0].values[i] = cost.CostDerivative(layerLearnData.outputs[0].values[i], expectedOutputs.values[i]);
@@ -395,7 +395,7 @@ public class OldStuff
                 for (int matrixIndex = 0; matrixIndex < weights.Length; matrixIndex++)
                 {
 
-                    DNAMatrix weightMatrix = layerLearnData.nodeValues[matrixIndex];
+                    Matrix weightMatrix = layerLearnData.nodeValues[matrixIndex];
 
                     
                 }
@@ -468,13 +468,13 @@ public class OldStuff
             Debug.Log("Nodes in: " + numNodesIn);
 
             //Generate number needed for all
-            weights = new DNAMatrix[1];
-            costGradientWeight = new DNAMatrix[1];
-            weightVelocities = new DNAMatrix[1];
+            weights = new Matrix[1];
+            costGradientWeight = new Matrix[1];
+            weightVelocities = new Matrix[1];
 
             // for (int i = 0; i < 1; i++)
             // {
-            weights[0] = new DNAMatrix(new Vector2Int(numNodesIn, numNodesOut));
+            weights[0] = new Matrix(new Vector2Int(numNodesIn, numNodesOut));
             // }
 
             biases = new double[numNodesOut];
@@ -500,13 +500,13 @@ public class OldStuff
             return numNodesOut;
         }
 
-        public DNAMatrix[] CalculateOutputs(DNAMatrix[] inputs)
+        public Matrix[] CalculateOutputs(Matrix[] inputs)
         {
             //Flatten the matrices and then do the matrix multiplication
-            DNAMatrix flattenedMatrix = new DNAMatrix(new Vector2Int(1, numNodesIn));
+            Matrix flattenedMatrix = new Matrix(new Vector2Int(1, numNodesIn));
 
             List<double> vals = new List<double>();
-            foreach (DNAMatrix mat in inputs)
+            foreach (Matrix mat in inputs)
             {
                 foreach (double val in mat.values)
                 {
@@ -516,7 +516,7 @@ public class OldStuff
 
             flattenedMatrix.values = vals.ToArray();
 
-            DNAMatrix outputMat = new DNAMatrix(new Vector2Int(1, numNodesOut));
+            Matrix outputMat = new Matrix(new Vector2Int(1, numNodesOut));
 
             //Multiply the matrices
             outputMat = flattenedMatrix * weights[0];
@@ -527,20 +527,20 @@ public class OldStuff
                 outputMat.values[i] = outputMat.values[i] + biases[i];
             }
 
-            DNAMatrix[] outputs = new DNAMatrix[1];
+            Matrix[] outputs = new Matrix[1];
 
             outputs[0] = outputMat;
 
             return outputs;
         }
 
-        public void CalculateHiddenLayerOutputNodeValues(DNALayerLearnData layerLearnData, DNAMatrix[] oldNodeValues)
+        public void CalculateHiddenLayerOutputNodeValues(DNALayerLearnData layerLearnData, Matrix[] oldNodeValues)
         {
             //In the event that we need to unflatten
 
             int length = oldNodeValues.Length * oldNodeValues[0].matrixDimensions.x * oldNodeValues[0].matrixDimensions.y;
 
-            DNAMatrix flatten = new DNAMatrix(new Vector2Int(1, length));
+            Matrix flatten = new Matrix(new Vector2Int(1, length));
 
             for (int i = 0; i < oldNodeValues.Length; i++)
             {
@@ -553,7 +553,7 @@ public class OldStuff
                 }
             }
 
-            layerLearnData.nodeValues = new DNAMatrix[1];
+            layerLearnData.nodeValues = new Matrix[1];
 
             layerLearnData.nodeValues[0] = flatten;
         }
@@ -564,7 +564,7 @@ public class OldStuff
 
             for (int i = 0; i < layerLearnData.inputs.Length; i++)
             {
-                DNAMatrix inputMatrix = new DNAMatrix(layerLearnData.inputs[i].matrixDimensions);
+                Matrix inputMatrix = new Matrix(layerLearnData.inputs[i].matrixDimensions);
 
                 //We know it will only have 
 
@@ -573,7 +573,7 @@ public class OldStuff
         }
 
         //I Honestly don't know if this is it
-        public void CalculateHiddenLayerNodeValues(DNALayerLearnData layerLearnData, DNALayer oldLayer, DNAMatrix[] oldNodeValues)
+        public void CalculateHiddenLayerNodeValues(DNALayerLearnData layerLearnData, DNALayer oldLayer, Matrix[] oldNodeValues)
         {
             //Need to return list of matrices with dimensions of what was inputted
             for (int i = 0; i < numNodesOut; i++)
@@ -640,7 +640,7 @@ public class OldStuff
             this.stride = stride;
             this.poolType = poolType;
 
-            weights = new DNAMatrix[filterNum];
+            weights = new Matrix[filterNum];
 
             this.outputSize = getOutputSize(lastSize);
 
@@ -691,14 +691,14 @@ public class OldStuff
             return weights.Length * size.x * size.y;
         }
 
-        public DNAMatrix[] CalculateOutputs(DNAMatrix[] inputs)
+        public Matrix[] CalculateOutputs(Matrix[] inputs)
         {
-            DNAMatrix[] outputs = new DNAMatrix[inputs.Length];
+            Matrix[] outputs = new Matrix[inputs.Length];
 
             for (int i = 0; i < inputs.Length; i++)
             {
                 //Apply pooling to each 
-                outputs[i] = new DNAMatrix(outputSize);
+                outputs[i] = new Matrix(outputSize);
 
                 for (int yIndex = 0; yIndex < outputSize.y; yIndex++)
                 {
@@ -718,7 +718,7 @@ public class OldStuff
             return outputs;
         }
 
-        double getPoolValue(int yIndex, int xIndex, DNAMatrix matrix)
+        double getPoolValue(int yIndex, int xIndex, Matrix matrix)
         {
             //  Debug.Log(matrix.matrixDimensions);
 
@@ -791,7 +791,7 @@ public class OldStuff
         }
 
         //Depending on algorithm
-        public void CalculateHiddenLayerNodeValues(DNALayerLearnData layerLearnData, DNALayer oldLayer, DNAMatrix[] oldNodeValues)
+        public void CalculateHiddenLayerNodeValues(DNALayerLearnData layerLearnData, DNALayer oldLayer, Matrix[] oldNodeValues)
         {
             for (int i = 0; i < outputMatNum; i++)
             {
@@ -836,13 +836,13 @@ public class OldStuff
             this.filterNum = filterNum;
 
             //Generate number needed for all
-            weights = new DNAMatrix[filterNum * lastLayerNum];
-            costGradientWeight = new DNAMatrix[filterNum * lastLayerNum];
-            weightVelocities = new DNAMatrix[filterNum * lastLayerNum];
+            weights = new Matrix[filterNum * lastLayerNum];
+            costGradientWeight = new Matrix[filterNum * lastLayerNum];
+            weightVelocities = new Matrix[filterNum * lastLayerNum];
 
             for (int i = 0; i < filterNum * lastLayerNum; i++)
             {
-                weights[i] = new DNAMatrix(filterSize);
+                weights[i] = new Matrix(filterSize);
             }
 
             biases = new double[filterNum];
@@ -906,15 +906,15 @@ public class OldStuff
             return (weights.Length / lastLayNum) * size.x * size.y;
         }
 
-        public DNAMatrix[] CalculateOutputs(DNAMatrix[] inputs)
+        public Matrix[] CalculateOutputs(Matrix[] inputs)
         {
-            DNAMatrix[] outputs = new DNAMatrix[filterNum * inputs.Length];
+            Matrix[] outputs = new Matrix[filterNum * inputs.Length];
             for (int j = 0; j < filterNum; j++)
             {
                 for (int i = 0; i < inputs.Length; i++)
                 {
                     int filterIndex = j * inputs.Length + i;
-                    outputs[filterIndex] = new DNAMatrix(outputSize);
+                    outputs[filterIndex] = new Matrix(outputSize);
                     for (int yIndex = 0; yIndex < outputSize.y; yIndex++)
                     {
                         for (int xIndex = 0; xIndex < outputSize.x; xIndex++)
@@ -933,7 +933,7 @@ public class OldStuff
             return outputs;
         }
 
-        public double getFilterVal(int yIndex, int xIndex, DNAMatrix matrix, int filterIndex)
+        public double getFilterVal(int yIndex, int xIndex, Matrix matrix, int filterIndex)
         {
             double total = 0;
             for (int y = 0; y < stride; y++)
@@ -947,7 +947,7 @@ public class OldStuff
             return total;
         }
 
-        public void CalculateHiddenLayerNodeValues(DNALayerLearnData layerLearnData, DNALayer oldLayer, DNAMatrix[] oldNodeValues)
+        public void CalculateHiddenLayerNodeValues(DNALayerLearnData layerLearnData, DNALayer oldLayer, Matrix[] oldNodeValues)
         {
 
         }
@@ -955,10 +955,10 @@ public class OldStuff
         public void UpdateWeightGradients(DNALayerLearnData layerLearnData)
         {
             /*
-            DNAMatrix[] outputs = new DNAMatrix[filterNum];
+            Matrix[] outputs = new Matrix[filterNum];
             for (int filter = 0; filter < filterNum; filter++)
             {
-                outputs[filter] = new DNAMatrix(outputSize);
+                outputs[filter] = new Matrix(outputSize);
 
                 for (int i = 0; i < inputs.Length; i++)
                 {
@@ -1071,9 +1071,9 @@ public class OldStuff
             return weights.Length * size.x * size.y;
         }
 
-        public DNAMatrix[] CalculateOutputs(DNAMatrix[] inputs)
+        public Matrix[] CalculateOutputs(Matrix[] inputs)
         {
-            DNAMatrix[] outputs = new DNAMatrix[inputs.Length];
+            Matrix[] outputs = new Matrix[inputs.Length];
 
             for (int i = 0; i < inputs.Length; i++)
             {
@@ -1098,7 +1098,7 @@ public class OldStuff
             return val;
         }
 
-        public void CalculateHiddenLayerNodeValues(DNALayerLearnData layerLearnData, DNALayer oldLayer, DNAMatrix[] oldNodeValues)
+        public void CalculateHiddenLayerNodeValues(DNALayerLearnData layerLearnData, DNALayer oldLayer, Matrix[] oldNodeValues)
         {
 
         }
@@ -1120,9 +1120,9 @@ public class OldStuff
 
         public int flattenLayer(Vector2Int inputtedSize);
 
-        public DNAMatrix[] CalculateOutputs(DNAMatrix[] inputs);
+        public Matrix[] CalculateOutputs(Matrix[] inputs);
 
-        public void CalculateHiddenLayerNodeValues(DNALayerLearnData layerLearnData, DNALayer oldLayer, DNAMatrix[] oldNodeValues);
+        public void CalculateHiddenLayerNodeValues(DNALayerLearnData layerLearnData, DNALayer oldLayer, Matrix[] oldNodeValues);
 
         public void UpdateWeightGradients(DNALayerLearnData layerLearnData);
         public void UpdateBiasGradients(DNALayerLearnData layerLearnData);

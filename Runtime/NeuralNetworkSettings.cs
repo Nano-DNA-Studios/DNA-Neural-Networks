@@ -5,7 +5,7 @@ using UnityEngine;
 namespace DNANeuralNetwork
 {
 	[System.Serializable]
-	public class DNANeuralNetworkworkSettings
+	public class NeuralNetworkSettings
 	{
 		public int[] networkSize;
 
@@ -19,7 +19,7 @@ namespace DNANeuralNetwork
 		public double momentum;
 		public double regularization;
 
-		public DNANeuralNetworkworkSettings()
+		public NeuralNetworkSettings()
 		{
 			activationType = DNAActivation.ActivationType.ReLU;
 			outputActivationType = DNAActivation.ActivationType.Softmax;

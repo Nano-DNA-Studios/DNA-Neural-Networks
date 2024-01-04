@@ -1,7 +1,4 @@
-using System.Collections;
-using System.Collections.Generic;
-using UnityEngine;
-using DNAMatrices;
+using MachineLearningMath;
 using static System.Math;
 
 namespace DNANeuralNetwork
@@ -30,7 +27,7 @@ namespace DNANeuralNetwork
 
 		public class MeanSquaredError : IDNACost
 		{
-			public double CostFunction(DNAMatrix predictedOutputs, DNAMatrix expectedOutputs)
+			public double CostFunction(Matrix predictedOutputs, Matrix expectedOutputs)
 			{
 				// cost is sum (for all x,y pairs) of: 0.5 * (x-y)^2
 				double cost = 0;
@@ -42,7 +39,7 @@ namespace DNANeuralNetwork
 				return 0.5 * cost;
 			}
 
-			public DNAMatrix CostDerivative(DNAMatrix predictedOutput, DNAMatrix expectedOutput)
+			public Matrix CostDerivative(Matrix predictedOutput, Matrix expectedOutput)
 			{
 				return predictedOutput - expectedOutput;
 			}
@@ -61,7 +58,7 @@ namespace DNANeuralNetwork
 		public class CrossEntropy : IDNACost
 		{
 			// Note: expected outputs are expected to all be either 0 or 1
-			public double CostFunction(DNAMatrix predictedOutputs, DNAMatrix expectedOutputs)
+			public double CostFunction(Matrix predictedOutputs, Matrix expectedOutputs)
 			{
 				// cost is sum (for all x,y pairs) of: 0.5 * (x-y)^2
 				double cost = 0;
@@ -75,9 +72,9 @@ namespace DNANeuralNetwork
 				return cost;
 			}
 
-			public DNAMatrix CostDerivative(DNAMatrix predictedOutput, DNAMatrix expectedOutput)
+			public Matrix CostDerivative(Matrix predictedOutput, Matrix expectedOutput)
 			{
-				DNAMatrix cost = new DNAMatrix(predictedOutput.Height, predictedOutput.Width);
+				Matrix cost = new Matrix(predictedOutput.Height, predictedOutput.Width);
 				for (int i = 0; i < cost.Length; i ++)
                 {
 					double x = predictedOutput[i];

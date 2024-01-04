@@ -1,15 +1,15 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-using DNAMatrices;
+using MachineLearningMath;
 
 namespace DNANeuralNetwork
 {
     public interface IDNAActivation
     {
-        DNAMatrix Activate(DNAMatrix matrix);
+        Matrix Activate(Matrix matrix);
 
-        DNAMatrix Derivative(DNAMatrix matrix);
+        Matrix Derivative(Matrix matrix);
 
         DNAActivation.ActivationType GetActivationType();
 

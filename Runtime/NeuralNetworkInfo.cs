@@ -7,7 +7,7 @@ using DNANeuralNetwork;
 namespace DNANeuralNetwork
 {
     [System.Serializable]
-    public class DNANeuralNetworkworkInfo
+    public class NeuralNetworkInfo
     {
         public Vector2Int inputSize;
         public LayerInfo[] layerInfos;
@@ -18,8 +18,6 @@ namespace DNANeuralNetwork
     [System.Serializable]
     public class LayerInfo
     {
-       
-
         //public LayerTypes type;
 
         // public ActivationLayerInfo activation;

@@ -2,7 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using System.Linq;
-using DNAMatrices;
+using MachineLearningMath;
 using System;
 
 namespace DNANeuralNetwork
@@ -51,14 +51,14 @@ namespace DNANeuralNetwork
         }
 
         //Have the Neural Network predict an answer
-        public (int predictedClass, DNAMatrix outputs) Classify(DNAMatrix inputs)
+        public (int predictedClass, Matrix outputs) Classify(Matrix inputs)
         {
             var outputs = CalculateOutputs(inputs);
             int predictedClass = MaxValueIndex(outputs);
             return (predictedClass, outputs);
         }
 
-        public DNAMatrix CalculateOutputs(DNAMatrix inputs)
+        public Matrix CalculateOutputs(Matrix inputs)
         {
             foreach (DNALayer layer in layers)
             {
@@ -72,7 +72,7 @@ namespace DNANeuralNetwork
             double costVal = 0;
             foreach (DNADataPoint d in data)
             {
-                (int predictedClass, DNAMatrix outputs) = Classify(d.inputs);
+                (int predictedClass, Matrix outputs) = Classify(d.inputs);
                 costVal += cost.CostFunction(outputs, d.expectedOutputs);
             }
             costVal = costVal / data.Length;
@@ -177,7 +177,7 @@ namespace DNANeuralNetwork
         {
             System.DateTime startTime = System.DateTime.Now;
 
-            DNAMatrix inputsToNextLayer = data.inputs;
+            Matrix inputsToNextLayer = data.inputs;
 
             for (int i = 0; i < layers.Length; i++)
             {
@@ -252,7 +252,7 @@ namespace DNANeuralNetwork
             layers[layers.Length - 1].SetActivationFunction(outputLayerActivation);
         }
 
-        public int MaxValueIndex(DNAMatrix values)
+        public int MaxValueIndex(Matrix values)
         {
             double maxValue = double.MinValue;
             int index = 0;
@@ -287,16 +287,16 @@ namespace DNANeuralNetwork
 
     public class DNALayerLearnData
     {
-        public DNAMatrix inputs;
-        public DNAMatrix weightedInputs;
-        public DNAMatrix activations;
-        public DNAMatrix nodeValues;
+        public Matrix inputs;
+        public Matrix weightedInputs;
+        public Matrix activations;
+        public Matrix nodeValues;
 
         public DNALayerLearnData(DNALayer layer)
         {
-            weightedInputs = new DNAMatrix(layer.NumNodesOut, 1);
-            activations = new DNAMatrix(layer.NumNodesOut, 1);
-            nodeValues = new DNAMatrix(layer.NumNodesOut, 1);
+            weightedInputs = new Matrix(layer.NumNodesOut, 1);
+            activations = new Matrix(layer.NumNodesOut, 1);
+            nodeValues = new Matrix(layer.NumNodesOut, 1);
         }
 
     }

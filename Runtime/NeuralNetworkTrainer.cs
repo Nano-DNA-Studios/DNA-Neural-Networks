@@ -5,18 +5,10 @@ using UnityEngine.UI;
 using System.IO;
 using DNANeuralNetwork;
 using System.Linq;
-using DNAMatrices;
+using MachineLearningMath;
 
-public class DNANeuralNetworkworkTrainer : MonoBehaviour
+public class NeuralNetworkTrainer : MonoBehaviour
 {
-    /*
-    [Header("Importing From File")]
-    [SerializeField] ImageHelper.ImportSettings importSettings;
-    [SerializeField] bool loadFromFile;
-    [SerializeField] bool newMode;
-    int MemoryImageNum = 0;
-
-    */
     [SerializeField] bool newMode;
     [SerializeField] string NeuralNetworkName;
 
@@ -42,7 +34,7 @@ public class DNANeuralNetworkworkTrainer : MonoBehaviour
     [SerializeField] string errorImagePath;
 
     [Header("Network Settings")]
-    [SerializeField] DNANeuralNetworkworkSettings networkSettings;
+    [SerializeField] NeuralNetworkSettings networkSettings;
 
     [Header("Image To Data")]
     List<DNADataPoint> allData = new List<DNADataPoint>(); //Will need to be cleared (I think)
@@ -289,7 +281,7 @@ public class DNANeuralNetworkworkTrainer : MonoBehaviour
 
         for (int i = 0; i < data.Length; i++)
         {
-            (int, DNAMatrix) classify = neuro.Classify(data[i].inputs);
+            (int, Matrix) classify = neuro.Classify(data[i].inputs);
 
 
             if (newMode)
@@ -393,7 +385,7 @@ public class DNANeuralNetworkworkTrainer : MonoBehaviour
     public DNADataPoint imageToData(Texture2D image, int labelIndex, int labelNum)
     {
 
-        DNAMatrix pixels = new DNAMatrix(image.height * image.width, 1);
+        Matrix pixels = new Matrix(image.height * image.width, 1);
 
         for (int x = 0; x < image.width; x++)
         {

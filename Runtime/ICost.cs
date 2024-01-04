@@ -1,15 +1,15 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-using DNAMatrices;
+using MachineLearningMath;
 
 namespace DNANeuralNetwork
 {
 	public interface IDNACost
 	{
-		double CostFunction(DNAMatrix predictedOutputs, DNAMatrix expectedOutputs);
+		double CostFunction(Matrix predictedOutputs, Matrix expectedOutputs);
 
-		DNAMatrix CostDerivative(DNAMatrix predictedOutput, DNAMatrix expectedOutput);
+		Matrix CostDerivative(Matrix predictedOutput, Matrix expectedOutput);
 
 		DNACost.CostType CostFunctionType();
 

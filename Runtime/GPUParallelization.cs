@@ -1,7 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-using DNAMatrices;
+using MachineLearningMath;
 
 namespace DNANeuralNetwork
 {
@@ -18,22 +18,22 @@ namespace DNANeuralNetwork
         /// <summary>
         /// Getter and Setter for the Layers Weights
         /// </summary>
-        public DNAMatrix weights { get { return Layer.weights; } set { Layer.weights = value; } }
+        public Matrix weights { get { return Layer.weights; } set { Layer.weights = value; } }
 
         /// <summary>
         /// Getter and Setter for the Layers Biases
         /// </summary>
-        public DNAMatrix biases { get { return Layer.biases; } set { Layer.biases = value; } }
+        public Matrix biases { get { return Layer.biases; } set { Layer.biases = value; } }
 
         /// <summary>
         /// Getter and Setter for the Layers Cost Gradient Bias
         /// </summary>
-        public DNAMatrix _costGradientBias { get { return Layer.CostGradientBias; } set { Layer.CostGradientBias = value; } }
+        public Matrix _costGradientBias { get { return Layer.CostGradientBias; } set { Layer.CostGradientBias = value; } }
 
         /// <summary>
         /// Getter and Setter for the Layers Cost Gradient Weights
         /// </summary>
-        public DNAMatrix _costGradientWeight { get { return Layer.CostGradientWeight; } set { Layer.CostGradientWeight = value; } }
+        public Matrix _costGradientWeight { get { return Layer.CostGradientWeight; } set { Layer.CostGradientWeight = value; } }
 
         /// <summary>
         /// Reference to the Layer
@@ -90,14 +90,14 @@ namespace DNANeuralNetwork
             }
         }
 
-        public (DNAMatrix weightedInputs, DNAMatrix activation) LayerOutputCalculationTrainingGPUFloat(DNAMatrix inputs)
+        public (Matrix weightedInputs, Matrix activation) LayerOutputCalculationTrainingGPUFloat(Matrix inputs)
         {
-            DNAMatrix activation = new DNAMatrix(0, 0);
-            DNAMatrix weightedInputs = new DNAMatrix(0, 0);
+            Matrix activation = new Matrix(0, 0);
+            Matrix weightedInputs = new Matrix(0, 0);
             if (weights.Width == inputs.Height)
             {
-                activation = new DNAMatrix(weights.Height, inputs.Width);
-                weightedInputs = new DNAMatrix(weights.Height, inputs.Width);
+                activation = new Matrix(weights.Height, inputs.Width);
+                weightedInputs = new Matrix(weights.Height, inputs.Width);
 
                 ComputeShader computeShader = LayerOutputGPUFloat;
 
@@ -110,10 +110,10 @@ namespace DNANeuralNetwork
                 ComputeBuffer activationFunction = new ComputeBuffer(1, sizeof(int));
 
                 //Set Data
-                inputsVals.SetData(new DNAMatrixFloat(inputs).Values);
+                inputsVals.SetData(new MatrixFloat(inputs).Values);
                 activationFunction.SetData(new int[] { Layer.activation.GetActivationFunctionIndex() });
-                weightsVals.SetData(new DNAMatrixFloat(weights).Values);
-                biasVals.SetData(new DNAMatrixFloat(biases).Values);
+                weightsVals.SetData(new MatrixFloat(weights).Values);
+                biasVals.SetData(new MatrixFloat(biases).Values);
                 dimensions.SetData(new int[] { weights.Width, weights.Height, biases.Width, biases.Height, inputs.Width, inputs.Height });
 
                 //Set Buffers
@@ -129,14 +129,14 @@ namespace DNANeuralNetwork
                 computeShader.Dispatch(0, activation.Width, activation.Height, 1);
 
                 //Recieve Results
-                DNAMatrixFloat activationMatrix = new DNAMatrixFloat(activation);
-                DNAMatrixFloat weightedInputsMatrix = new DNAMatrixFloat(weightedInputs);
+                MatrixFloat activationMatrix = new MatrixFloat(activation);
+                MatrixFloat weightedInputsMatrix = new MatrixFloat(weightedInputs);
 
                 activationVals.GetData(activationMatrix.Values);
                 weightedInputVals.GetData(weightedInputsMatrix.Values);
 
-                activation = new DNAMatrix(activationMatrix);
-                weightedInputs = new DNAMatrix(weightedInputsMatrix);
+                activation = new Matrix(activationMatrix);
+                weightedInputs = new Matrix(weightedInputsMatrix);
 
                 //Clear Memory
                 inputsVals.Release();
@@ -153,14 +153,14 @@ namespace DNANeuralNetwork
             return (weightedInputs, activation);
         }
 
-        public (DNAMatrix weightedInputs, DNAMatrix activation) LayerOutputCalculationTrainingGPU(DNAMatrix inputs)
+        public (Matrix weightedInputs, Matrix activation) LayerOutputCalculationTrainingGPU(Matrix inputs)
         {
-            DNAMatrix activation = new DNAMatrix(0, 0);
-            DNAMatrix weightedInputs = new DNAMatrix(0, 0);
+            Matrix activation = new Matrix(0, 0);
+            Matrix weightedInputs = new Matrix(0, 0);
             if (weights.Width == inputs.Height)
             {
-                activation = new DNAMatrix(weights.Height, inputs.Width);
-                weightedInputs = new DNAMatrix(weights.Height, inputs.Width);
+                activation = new Matrix(weights.Height, inputs.Width);
+                weightedInputs = new Matrix(weights.Height, inputs.Width);
 
                 ComputeShader computeShader = LayerOutputGPU;
 
@@ -265,7 +265,7 @@ namespace DNANeuralNetwork
         }
 
         //Parallel Version
-        public void ParallelCalculateOutputLayerNodeValues(DNAParallelLayerLearnData layerLearnData, double[] expectedOutput, IDNACost cost, DNAMatrix expectedOutputDim)
+        public void ParallelCalculateOutputLayerNodeValues(DNAParallelLayerLearnData layerLearnData, double[] expectedOutput, IDNACost cost, Matrix expectedOutputDim)
         {
             int expectedOutputLength = expectedOutput.Length;
             int weightedInputLength = layerLearnData.weightedInputs.Length;
@@ -322,7 +322,7 @@ namespace DNANeuralNetwork
             derivativeTypes.Release();
         }
 
-        public DNAMatrix ParallelUpdateGradientsWeightsGPU(DNAParallelLayerLearnData layerLearnData)
+        public Matrix ParallelUpdateGradientsWeightsGPU(DNAParallelLayerLearnData layerLearnData)
         {
             int inputsLength = layerLearnData.inputs.Length;
             int nodeValuesLength = layerLearnData.nodeValues.Length;
@@ -357,7 +357,7 @@ namespace DNANeuralNetwork
             //Calculate
             computeShader.Dispatch(0, _costGradientWeight.Width, _costGradientWeight.Height, 1); //layerLearnData.Length
 
-            DNAMatrix costGradientWeight = new DNAMatrix(_costGradientWeight.Height, _costGradientWeight.Width);
+            Matrix costGradientWeight = new Matrix(_costGradientWeight.Height, _costGradientWeight.Width);
 
             //Receive Result
             weightsValues.GetData(costGradientWeight.Values);
@@ -371,7 +371,7 @@ namespace DNANeuralNetwork
             return costGradientWeight;
         }
 
-        public DNAMatrix ParallelUpdateGradientsBiasGPU(DNAParallelLayerLearnData layerLearnData)
+        public Matrix ParallelUpdateGradientsBiasGPU(DNAParallelLayerLearnData layerLearnData)
         {
             int nodeValuesLength = layerLearnData.nodeValues.Length;
             int costGradientBiasLength = _costGradientBias.Length;
@@ -401,7 +401,7 @@ namespace DNANeuralNetwork
             //Calculate
             computeShader.Dispatch(0, _costGradientBias.Width, _costGradientBias.Height, 1); //layerLearnData.Length
 
-            DNAMatrix costGradientBias = new DNAMatrix(_costGradientBias.Height, _costGradientBias.Width);
+            Matrix costGradientBias = new Matrix(_costGradientBias.Height, _costGradientBias.Width);
 
             //Receive Result
             biasValues.GetData(costGradientBias.Values);
