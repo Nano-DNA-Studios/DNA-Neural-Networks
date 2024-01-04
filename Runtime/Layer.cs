@@ -1,6 +1,7 @@
 using MachineLearningMath;
 using System;
 using UnityEngine;
+using MachineLearning.Parallelization;
 
 namespace MachineLearning
 {

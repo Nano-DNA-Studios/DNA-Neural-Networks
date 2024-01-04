@@ -1,7 +1,7 @@
 using UnityEngine;
 using MachineLearningMath;
 
-namespace MachineLearning
+namespace MachineLearning.Parallelization
 {
     public class GPUParallelization
     {
