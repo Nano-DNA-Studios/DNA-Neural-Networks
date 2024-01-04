@@ -1,0 +1,5 @@
+{
+    "dependencies": {
+        "com.nanodnastudios.machinelearningmath": "https://github.com/Nano-DNA-Studios/Machine-Learning-Math.git",
+    }
+}
