@@ -20,8 +20,8 @@ namespace MachineLearning
 		public NeuralNetworkSettings()
 		{
 			activationType = ActivationType.ReLU;
-			outputActivationType = ActivationType.Softmax;
-			costType = Cost.CostType.CrossEntropy;
+			outputActivationType = ActivationType.Sigmoid;
+			costType = Cost.CostType.MeanSquareError;
 			initialLearningRate = 0.05;
 			learnRateDecay = 0.075;
 			dataPerBatch = 32;
