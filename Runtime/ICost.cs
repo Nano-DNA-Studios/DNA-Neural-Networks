@@ -1,6 +1,6 @@
 using MachineLearningMath;
 
-namespace DNANeuralNetwork
+namespace MachineLearning
 {
 	public interface ICost
 	{

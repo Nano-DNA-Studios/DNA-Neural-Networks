@@ -2,7 +2,7 @@ using MachineLearningMath;
 using System;
 using UnityEngine;
 
-namespace DNANeuralNetwork
+namespace MachineLearning
 {
     [Serializable]
     public class Layer

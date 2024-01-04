@@ -2,7 +2,7 @@ using MachineLearningMath;
 using static System.Math;
 using System;
 
-namespace DNANeuralNetwork
+namespace MachineLearning
 {
 	[Serializable]
 	public struct Activation

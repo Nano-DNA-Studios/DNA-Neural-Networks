@@ -2,7 +2,7 @@ using UnityEngine;
 using System;
 
 
-namespace DNANeuralNetwork
+namespace MachineLearning
 {
     [Serializable]
     public class NeuralNetworkInfo

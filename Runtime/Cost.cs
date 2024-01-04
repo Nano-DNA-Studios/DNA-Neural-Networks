@@ -1,7 +1,7 @@
 using MachineLearningMath;
 using static System.Math;
 
-namespace DNANeuralNetwork
+namespace MachineLearning
 {
     public class Cost
     {

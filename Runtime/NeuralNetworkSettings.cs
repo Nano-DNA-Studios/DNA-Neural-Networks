@@ -2,7 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-namespace DNANeuralNetwork
+namespace MachineLearning
 {
 	[System.Serializable]
 	public class NeuralNetworkSettings

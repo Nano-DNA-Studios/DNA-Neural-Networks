@@ -1,5 +1,5 @@
 
-namespace DNANeuralNetwork
+namespace MachineLearning
 {
     public class Batch
     {

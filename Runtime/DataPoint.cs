@@ -1,10 +1,6 @@
-using System.Collections;
-using System.Collections.Generic;
-using UnityEngine;
-using DNANeuralNetwork;
 using MachineLearningMath;
 
-namespace DNANeuralNetwork
+namespace MachineLearning
 {
     public class DataPoint
     {

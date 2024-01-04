@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using MachineLearningMath;
 
-namespace DNANeuralNetwork
+namespace MachineLearning
 {
     public interface IActivation
     {
