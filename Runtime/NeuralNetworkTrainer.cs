@@ -186,7 +186,6 @@ public class NeuralNetworkTrainer : MonoBehaviour
         yield return null;
 
         int total = allData.Count;
-        int count = 0;
 
         System.Random rng = new System.Random();
 
@@ -599,8 +598,6 @@ public class NeuralNetworkTrainer : MonoBehaviour
 
     public Color getValidPixel(Texture2D image, int oldX, int oldY)
     {
-        bool verdict = true;
-
         int x = oldX + Mathf.FloorToInt(image.width / 2);
         int y = oldY + Mathf.FloorToInt(image.height / 2);
 
