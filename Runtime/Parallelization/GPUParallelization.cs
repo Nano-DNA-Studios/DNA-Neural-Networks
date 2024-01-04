@@ -1,5 +1,6 @@
 using UnityEngine;
 using MachineLearningMath;
+using MachineLearning.Cost;
 
 namespace MachineLearning.Parallelization
 {

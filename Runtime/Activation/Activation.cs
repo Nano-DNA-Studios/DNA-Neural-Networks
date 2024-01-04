@@ -1,5 +1,3 @@
-using MachineLearningMath;
-using static System.Math;
 using System;
 
 namespace MachineLearning.Activations

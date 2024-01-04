@@ -1,6 +1,7 @@
 using MachineLearningMath;
 using System;
 using MachineLearning.Activations;
+using MachineLearning.Cost;
 
 namespace MachineLearning
 {

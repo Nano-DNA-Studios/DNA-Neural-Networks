@@ -1,6 +1,6 @@
 using MachineLearningMath;
 
-namespace MachineLearning
+namespace MachineLearning.Cost
 {
 	public interface ICost
 	{
@@ -8,7 +8,7 @@ namespace MachineLearning
 
 		Matrix CostDerivative(Matrix predictedOutput, Matrix expectedOutput);
 
-		Cost.CostType CostFunctionType();
+		CostType CostFunctionType();
 
 		int GetCostIndex();
 	}

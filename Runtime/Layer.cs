@@ -3,6 +3,7 @@ using System;
 using UnityEngine;
 using MachineLearning.Parallelization;
 using MachineLearning.Activations;
+using MachineLearning.Cost;
 
 namespace MachineLearning
 {
