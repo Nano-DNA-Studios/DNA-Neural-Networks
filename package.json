@@ -21,10 +21,10 @@
   "unity": "2021.3",
   "type": "tool",
   "samples": [
-   {
+    {
      "displayName": "Neural Network Trainer",
      "description": "Trainer for Neural Network using Images as Data",
-     "path": "Samples~/Neural Network Trainer"
-   },
-   ],
+     "path": "Samples~/NeuralNetworkTrainer"
+    }
+  ]
 }
