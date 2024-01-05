@@ -43,8 +43,6 @@ public class NeuralNetworkTrainer : MonoBehaviour
     [SerializeField] int outputNum;
 
     [Header("UI Stuff")]
-    [SerializeField] Button LoadImgsBTN;
-    [SerializeField] Button TrainBTN;
     //[SerializeField] Text Log;
     [SerializeField] Text Percent;
     [SerializeField] Slider PercentSlider;
@@ -234,12 +232,6 @@ public class NeuralNetworkTrainer : MonoBehaviour
             createLine("Epoch: " + epoch);
 
             //Shuffle Batches
-           // yield return StartCoroutine(ShuffleArray(batches));
-
-            // StartCoroutine(displayCost(false, false, neuro, evaluateData));
-
-            // StartCoroutine(displayCost(true, false, neuro, evaluateData));
-
             System.DateTime startTime = System.DateTime.UtcNow;
 
             currentLearningRate = (1.0 / (1.0 + networkSettings.learnRateDecay * epoch)) * networkSettings.initialLearningRate;
@@ -260,8 +252,6 @@ public class NeuralNetworkTrainer : MonoBehaviour
 
             Debug.Log($"Epoch:{epoch}  Learning Rate:{currentLearningRate}   Training Time (sec): " + (endTime - startTime).TotalSeconds);
 
-            //  StartCoroutine(displayCost(false, true, neuro, evaluateData));
-
             if (epoch % evaluateIndex == 0)
             {
                 yield return StartCoroutine(displayCost(true, true, neuro, evaluateData));
@@ -272,7 +262,6 @@ public class NeuralNetworkTrainer : MonoBehaviour
 
         //Once Finished
         createLine("Finished");
-        // createLine("Total Time elapsed: " + (trainEnd - startTime));
         yield return null;
     }
 
@@ -334,8 +323,6 @@ public class NeuralNetworkTrainer : MonoBehaviour
         StartCoroutine(saveBestNetwork(neuro, actualAccuracy));
 
         yield return null;
-
-        //yield return StartCoroutine(saveBestNetwork(neuro, actualAccuracy, data));
     }
 
 

@@ -5,7 +5,7 @@
   "license": "APACHE",
   "repository": {
     "type": "git",
-    "url": "https://github.com/Nano-DNA-Studios/DNA-Neural-Networks.git"
+    "url": "https://github.com/Nano-DNA-Studios/Machine-Learning.git"
   },
   "author": "MrDNAlex <mr.dnalex.2003@gmail.com> (https://github.com/MrDNAlex)",
   "keywords": [
@@ -19,5 +19,11 @@
     },
   "displayName": "Machine Learning",
   "unity": "2021.3",
-  "type": "tool"
+  "type": "tool",
+  "samples": [
+   {
+     "displayName": "Neural Network Trainer",
+     "description": "Trainer for Neural Network using Images as Data",
+     "path": "Samples~/Neural Network Trainer"
+   },
 }
